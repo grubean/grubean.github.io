@@ -5,45 +5,70 @@
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
     --accent-color: #007aff;
-    --glass-btn: rgba(255, 255, 255, 0.6);
-    --border-light: rgba(0,0,0,0.1);
-    --code-bg: #f5f5f7;
+    /* 液态玻璃：高模糊，低透明度 */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --code-bg: #282c34;
+    --code-text: #abb2bf;
 }
 
 [data-theme="dark"] {
-    /* --- 暗色变量 (修正为高级深灰) --- */
-    --bg-color: #1c1c1e;  /* iPhone 深色背景 */
-    --card-bg: #2c2c2e;   /* 卡片比背景稍浅 */
+    /* --- 暗色变量 (深空灰) --- */
+    --bg-color: #1c1c1e;
+    --card-bg: #2c2c2e;
     --text-primary: #f5f5f7;
     --text-secondary: #a1a1a6;
     --accent-color: #0a84ff;
-    --glass-btn: rgba(40, 40, 40, 0.6);
-    --border-light: rgba(255,255,255,0.1);
-    --code-bg: #000000;   /* 代码块纯黑 */
+    --glass-bg: rgba(40, 40, 40, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --code-bg: #000000;
+    --code-text: #fff;
 }
 
-/* 基础重置 */
-body {
+/* 全局重置 */
+body, html {
     margin: 0;
     padding: 0;
+    height: 100%; /* 必须占满 */
+    width: 100%;
+    overflow: hidden; /* 禁止 body 滚动，由内部图层接管 */
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     background-color: var(--bg-color);
     color: var(--text-primary);
-    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
-
 a { text-decoration: none; color: inherit; }
 * { box-sizing: border-box; }
 
+
 /* =========================================
-   1. 布局结构 (Unlock Effect)
+   1. 图层架构 (Unlock Mechanism)
    ========================================= */
 
-/* 首页：全屏壁纸层 */
-.lock-screen-section {
-    height: 100vh; /* 强制占满一屏 */
+/* 底层：内容层 (一开始被盖住) */
+.content-layer-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: 1; /* 在底部 */
+    overflow-y: hidden; /* 解锁前禁止滚动 */
+    padding-top: 100px; /* 给顶部按钮留出空间 */
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: var(--bg-color);
+}
+
+/* 顶层：锁屏壁纸层 (盖在最上面) */
+.lock-screen-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100; /* 在最顶层 */
     background-image: url('https://bing.biturl.top/?resolution=1920&format=image');
     background-size: cover;
     background-position: center;
@@ -51,72 +76,61 @@ a { text-decoration: none; color: inherit; }
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
-    /* 视觉微调：给壁纸加一点点暗色滤镜，让文字更白 */
-    box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.2);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* iOS 丝滑动画 */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); /* 底部阴影，增加立体感 */
 }
 
-.lock-content { text-align: center; color: white; z-index: 2; }
-.lock-content h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-.lock-content p { font-size: 1.2rem; margin-top: 10px; font-weight: 300; opacity: 0.9; }
+/* 核心：解锁状态 (添加这个 class 后壁纸上移) */
+.lock-screen-layer.unlocked {
+    transform: translateY(-100%);
+}
+
+/* 锁屏上的文字 */
+.lock-content { text-align: center; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+.lock-content h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
+.lock-content p { font-size: 1.2rem; margin-top: 8px; font-weight: 300; opacity: 0.9; }
 
 .scroll-indicator {
     position: absolute;
-    bottom: 50px;
-    color: rgba(255,255,255,0.8);
+    bottom: 60px;
+    color: white;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     animation: bounce 2s infinite;
+    cursor: pointer;
+    opacity: 0.8;
 }
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-/* 内容层 */
-.content-section {
-    background: var(--bg-color);
-    min-height: 100vh;
-    padding: 40px 20px;
-    position: relative;
-    z-index: 10;
-    border-radius: 30px 30px 0 0; /* 顶部圆角，衔接壁纸 */
-    margin-top: -20px; /* 稍微向上盖住壁纸底部 */
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-}
-
-.container { max-width: 800px; margin: 0 auto; }
-.site-footer { text-align: center; padding: 60px 0; color: var(--text-secondary); font-size: 0.85rem; }
-
-/* 文章页专用 */
-.article-spacer { height: 100px; } /* 顶部留白 */
-.article-mode { border-radius: 20px; margin-top: 0; box-shadow: none; }
 
 /* =========================================
-   2. 卡片优化 (Card Grid)
+   2. 卡片与布局 (Cards)
    ========================================= */
+.container { max-width: 800px; margin: 0 auto; padding: 0 20px 60px 20px; }
+
 .post-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 手机上更窄，一行能显示更多内容 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
 }
 
 .post-card {
     background: var(--card-bg);
-    border-radius: 16px; /* 圆角稍小一点，更精致 */
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     transition: transform 0.2s;
-    height: 320px; /* 【关键】锁死高度，防止卡片太长 */
+    height: 260px; /* 【修正】高度改小，不再那么长 */
     display: flex;
     flex-direction: column;
+    border: 1px solid rgba(128,128,128, 0.1);
 }
-.post-card:hover { transform: translateY(-5px); }
+.post-card:hover { transform: scale(1.02); }
 
 /* 图片容器 */
 .card-img-box {
-    height: 180px; /* 图片高度固定 */
+    height: 150px; /* 【修正】图片高度固定 */
     width: 100%;
     background: #eee;
     overflow: hidden;
@@ -125,146 +139,131 @@ a { text-decoration: none; color: inherit; }
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* 【关键】如果图很长，优先显示顶部（人脸/头部） */
-    object-position: top center;
+    object-position: top center; /* 【修正】优先显示头部，不切头 */
 }
 
 /* 文字容器 */
 .card-body {
-    padding: 15px; /* 减小内边距 */
+    padding: 12px 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 .card-title {
-    font-size: 1.1rem; /* 字体减小 */
-    font-weight: 700;
-    margin: 0 0 5px 0;
+    font-size: 1rem; /* 【修正】字体改小 */
+    font-weight: 600;
+    margin: 0;
     color: var(--text-primary);
-    line-height: 1.3;
-    /* 限制显示2行 */
+    line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 2; /* 最多显示2行 */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 .card-date {
     font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-top: auto;
+    margin-top: 8px;
 }
 
+
 /* =========================================
-   3. 按钮优化 (Glass Morphism)
+   3. 液态玻璃按钮 (Liquid Glass)
    ========================================= */
 .nav-fixed {
     position: fixed;
     top: 20px;
     left: 0;
     width: 100%;
-    padding: 0 20px;
-    z-index: 100;
+    padding: 0 24px;
+    z-index: 200; /* 比锁屏层还高 */
     display: flex;
     justify-content: space-between;
-    pointer-events: none; /* 让中间区域可点击 */
+    pointer-events: none;
 }
 .glass-btn {
-    pointer-events: auto; /* 按钮恢复可点击 */
-    background: var(--glass-btn);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-light);
+    pointer-events: auto;
+    /* 液态效果核心：高模糊 + 低不透明度背景 + 混合模式边框 */
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
     color: var(--text-primary);
-    width: 44px;
+
+    padding: 0 20px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: 99px; /* 胶囊型 */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: 0.2s;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
 }
-.glass-btn:hover { transform: scale(1.05); background: var(--card-bg); }
+.glass-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.03); }
+.btn-theme { width: 44px; padding: 0; border-radius: 50%; }
 
 
 /* =========================================
-   4. Markdown 内容优化 (Typography)
+   4. Markdown 修复 (公式 & 代码)
    ========================================= */
-.article-header { text-align: center; margin-bottom: 40px; }
-.article-header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
-.article-meta { color: var(--text-secondary); font-size: 0.9rem; }
-.article-hero-img img { width: 100%; height: 300px; object-fit: cover; object-position: top; border-radius: 16px; margin-bottom: 30px; }
-
 .markdown-body {
     font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    padding-bottom: 60px;
 }
 
-/* 图片优化 */
-.markdown-body img {
-    max-width: 100%;
+/* 代码块终极修复 */
+.markdown-body pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px;
     border-radius: 12px;
+    overflow-x: auto;
     margin: 20px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    font-family: "SF Mono", Consolas, monospace;
+}
+.markdown-body code {
+    font-family: "SF Mono", Consolas, monospace;
+}
+/* 行内代码 */
+.markdown-body p code {
+    background: rgba(128,128,128,0.2);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--accent-color);
 }
 
-/* 引用块 (Blockquote) 修复 */
+/* 公式 (MathJax) 容器修复 */
+.mjx-chtml { font-size: 110% !important; margin: 1em 0; }
+
+/* 引用块 */
 .markdown-body blockquote {
-    border-left: 4px solid var(--accent-color);
-    background: rgba(128,128,128,0.1);
+    border-left: 3px solid var(--accent-color);
     margin: 20px 0;
-    padding: 15px 20px;
-    border-radius: 0 12px 12px 0;
+    padding-left: 15px;
     color: var(--text-secondary);
     font-style: italic;
 }
 
-/* 代码块 (Code Block) 修复 */
-.markdown-body pre {
-    background: var(--code-bg);
-    padding: 15px;
-    border-radius: 12px;
-    overflow-x: auto;
-    border: 1px solid var(--border-light);
+/* 图片 */
+.markdown-body img {
+    border-radius: 16px;
+    max-width: 100%;
     margin: 20px 0;
-}
-.markdown-body code {
-    font-family: "Menlo", "Consolas", monospace;
-    font-size: 0.9em;
-    color: var(--accent-color); /* 行内代码高亮 */
-}
-.markdown-body pre code {
-    color: inherit; /* 代码块内文字颜色跟随主题 */
-    background: transparent;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* 表格 (Table) 修复 */
-.markdown-body table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--border-light);
-}
-.markdown-body th {
-    background: rgba(128,128,128,0.1);
-    font-weight: 600;
-    text-align: left;
-    padding: 12px 15px;
-}
-.markdown-body td {
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border-light);
-}
-.markdown-body tr:last-child td { border-bottom: none; }
-
-/* 手机适配微调 */
+/* 手机适配 */
 @media (max-width: 768px) {
-    .content-section { padding: 30px 15px; } /* 缩小两边边距 */
+    .container { padding: 0 10px 40px 10px; }
     .lock-content h1 { font-size: 2.5rem; }
-    .article-hero-img img { height: 200px; }
-    .markdown-body { font-size: 1rem; } /* 字体稍微调小 */
+    .glass-btn { padding: 0 16px; font-size: 0.8rem; }
 }
