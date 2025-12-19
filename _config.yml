@@ -1,0 +1,7 @@
+title: Grubean's Blog
+description: Keep it Simple.
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+show_excerpts: true
