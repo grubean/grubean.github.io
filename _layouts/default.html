@@ -5,55 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{{ page.title }}</title>
     <link rel="stylesheet" href="/assets/css/style.css">
-
     <script>
-    window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      svg: { fontCache: 'global' }
-    };
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
     <div class="nav-fixed">
-        <a href="/" class="glass-btn btn-home">主页</a>
-        <button id="theme-toggle" class="glass-btn btn-theme">
-            <span>☀️</span>
-        </button>
+        <a href="/" class="glass-btn">主页</a>
+        <button id="theme-toggle" class="glass-btn btn-theme"><span>☀️</span></button>
     </div>
 
     {% if page.url == "/" %}
-        <div class="lock-screen-layer">
-            <div class="lock-content">
+        <div class="wallpaper-section">
+            <div class="wallpaper-content">
                 <h1>{{ site.title }}</h1>
-                <p>{{ site.time | date: "%Y" }}</p>
-            </div>
-            <div class="scroll-indicator">Swipe Up to Unlock</div>
+                <p>2025</p> </div>
+            <div class="scroll-hint">↓</div>
         </div>
 
-        <div class="content-layer-fixed">
+        <div class="content-section">
             <main class="container">
-                <div style="margin-bottom: 20px; opacity: 0.5; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Latest Posts</div>
                 {{ content }}
             </main>
+            <footer style="text-align:center; padding:50px; color:#888; font-size:0.8rem;">
+                © 2025 Grubean
+            </footer>
         </div>
 
     {% else %}
-        <div class="content-layer-fixed" style="overflow-y: auto;">
+        <main class="content-section" style="margin-top:0; min-height:100vh;">
             <article class="container markdown-body">
                 {% if page.image %}
-                    <img src="{{ page.image }}" style="width: 100%; height: 280px; object-fit: cover; object-position: top; margin-top: 0;">
+                    <img src="{{ page.image }}" style="width:100%; height:250px; object-fit:cover; margin-top:0;">
                 {% endif %}
 
-                <h1 style="margin-bottom: 5px; line-height: 1.3;">{{ page.title }}</h1>
-                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 30px;">
+                <h1 style="margin-bottom:10px;">{{ page.title }}</h1>
+                <div style="color:#888; font-size:0.9rem; margin-bottom:30px;">
                     {{ page.date | date: "%Y-%m-%d" }}
                 </div>
 
                 {{ content }}
             </article>
-        </div>
+            <footer style="text-align:center; padding:50px; color:#888;">END</footer>
+        </main>
     {% endif %}
 
     <script src="/assets/js/main.js"></script>

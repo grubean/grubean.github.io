@@ -10,12 +10,12 @@ title: Home
           {% if post.image %}
             <img src="{{ post.image }}" loading="lazy" alt="cover">
           {% else %}
-            <div style="width:100%; height:100%; background: #e0e0e0;"></div>
+            <div style="width:100%; height:100%; background: #eee;"></div>
           {% endif %}
       </div>
       <div class="card-body">
-          <h3 class="card-title">{{ post.title }}</h3>
-          <div class="card-date">{{ post.date | date: "%b %d" }}</div>
+          <div class="card-title">{{ post.title }}</div>
+          <div class="card-date">{{ post.date | date: "%m.%d" }}</div>
       </div>
   </a>
   {% endfor %}
