@@ -1,7 +1,6 @@
-title: 姐姐的Blog
-description: 不管古今世事，永为天地闲人
-theme: jekyll-theme-architect
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
-show_excerpts: true
+title: 周也的生活
+description: Design & Code
+# theme: jekyll-theme-architect  <-- 这行删掉或者注释掉，我们现在用的是自定义布局
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
+exclude: [README.md, Gemfile, Gemfile.lock]

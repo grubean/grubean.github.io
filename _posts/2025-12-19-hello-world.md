@@ -3,6 +3,7 @@ layout: post
 title:  "我的第一篇极简博客"
 date:   2025-12-18 12:00:00 +0800
 categories: [随笔]
+image: https://uapis.cn/static/uploads/9b354213bd_FcbaHiLQ1wja.webp
 ---
 
 这是我的第一篇文章。

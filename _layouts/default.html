@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+    {% if page.url == "/" %}
+    <header class="hero">
+        <div>
+            <h1>{{ site.title }}</h1>
+            <p>{{ site.description }}</p>
+        </div>
+        <div class="scroll-down">↓</div>
+    </header>
+    {% else %}
+    <div style="padding: 20px; text-align: center; background: #fff;">
+        <a href="/" style="font-weight: bold; font-size: 1.2rem;">← Back to Home</a>
+    </div>
+    {% endif %}
+
+    <main class="container">
+        <div class="markdown-body">
+            {{ content }}
+        </div>
+
+        <footer style="text-align: center; margin-top: 80px; color: #888; font-size: 0.8rem;">
+            &copy; {{ site.time | date: "%Y" }} {{ site.title }}
+        </footer>
+    </main>
+
+</body>
+</html>
