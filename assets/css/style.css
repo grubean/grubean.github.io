@@ -1,24 +1,26 @@
 :root {
-    --bg-color: #f2f2f7;
+    --bg-color: #f5f5f7;
     --card-bg: #ffffff;
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
     --accent-color: #007aff;
-    /* 液态玻璃：高模糊，低透明度 */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --code-bg: #282c34; /* 强制代码块深色背景 */
+    /* 液态玻璃核心：极低透明度 + 极高模糊 */
+    --glass-bg: rgba(255, 255, 255, 0.01);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-blur: blur(50px);
+    --code-bg: #282c34;
 }
 
 [data-theme="dark"] {
-    --bg-color: #000000;
-    --card-bg: #1c1c1e;
+    /* 严格执行：背景深灰，绝非纯黑 */
+    --bg-color: #1c1c1e; /* iPhone 设置页面的深灰 */
+    --card-bg: #2c2c2e;  /* 比背景稍浅的灰 */
     --text-primary: #f5f5f7;
     --text-secondary: #a1a1a6;
     --accent-color: #0a84ff;
-    --glass-bg: rgba(40, 40, 40, 0.3);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --code-bg: #1c1c1e;
+    --glass-bg: rgba(0, 0, 0, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --code-bg: #000000; /* 代码块可以用纯黑来突出对比 */
 }
 
 body {
@@ -33,16 +35,15 @@ a { text-decoration: none; color: inherit; }
 * { box-sizing: border-box; }
 
 /* =========================================
-   1. 布局核心：原生跟随手势 (Native Scroll)
+   1. 布局：真·揭盖分层 (Z-Index Hierarchy)
    ========================================= */
 
-/* 壁纸层：占满一屏 */
+/* 壁纸层：位于顶层 (Z-Index 100) */
 .wallpaper-section {
+    position: relative;
+    z-index: 100; /* 压制住下面的文章 */
     height: 100vh;
     width: 100%;
-    /* 核心：Sticky 定位，让它有一种贴合感，但能随页面滑走 */
-    position: relative;
-    z-index: 20;
     background-image: url('https://bing.biturl.top/?resolution=1920&format=image');
     background-size: cover;
     background-position: center;
@@ -50,86 +51,90 @@ a { text-decoration: none; color: inherit; }
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    /* 关键：底部巨大阴影，制造“悬浮在文章之上”的感觉 */
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    /* 底部圆角，像手机屏幕 */
+    border-radius: 0 0 40px 40px;
 }
 
-.wallpaper-content { text-align: center; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.wallpaper-content { text-align: center; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.6); }
 .wallpaper-content h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
-.wallpaper-content p { font-size: 1.5rem; margin-top: 5px; opacity: 0.9; font-weight: 300; }
+.wallpaper-content p { font-size: 1.2rem; margin-top: 10px; font-weight: 500; opacity: 0.9; font-variant-numeric: tabular-nums;}
 
 .scroll-hint {
     position: absolute;
-    bottom: 80px;
+    bottom: 50px;
     color: rgba(255,255,255,0.8);
-    animation: float 2s infinite;
+    animation: bounce 2s infinite;
 }
-@keyframes float { 0%,100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
+@keyframes bounce { 0%,100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
 
-/* 文章层：紧接在壁纸下面 */
+/* 内容层：位于底层 (Z-Index 1) */
 .content-section {
     position: relative;
-    z-index: 10;
+    z-index: 1;
     background: var(--bg-color);
     min-height: 100vh;
-    /* 向上提一点，盖住壁纸底部，消除缝隙 */
-    margin-top: -20px;
-    border-radius: 30px 30px 0 0;
-    padding: 40px 20px;
+    padding: 60px 20px;
+    /* 关键：负 Margin，让文章层插到壁纸层下面去，形成重叠 */
+    margin-top: -60px;
+    padding-top: 100px; /* 补偿被挡住的区域 */
 }
 
 /* =========================================
-   2. 卡片：80% 图片 / 20% 标题
+   2. 卡片：缩短高度 (Compact)
    ========================================= */
 .container { max-width: 800px; margin: 0 auto; }
 
 .post-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    gap: 25px;
 }
 
 .post-card {
     background: var(--card-bg);
     border-radius: 16px;
     overflow: hidden;
-    height: 350px; /* 固定总高度 */
+    height: 300px; /* 【修正】高度缩短 */
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     transition: transform 0.2s;
+    border: 1px solid rgba(128,128,128, 0.05);
 }
-.post-card:hover { transform: scale(1.02); }
+.post-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 
-/* 图片区：霸占 85% */
+/* 图片区：80% */
 .card-img-box {
-    height: 85%;
+    height: 75%;
     width: 100%;
     background: #ccc;
+    position: relative;
 }
 .card-img-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top; /* 保证显示人头 */
+    object-position: top; /* 确保显示人头 */
 }
 
-/* 标题区：只留 15% */
+/* 标题区：20% */
 .card-body {
-    height: 15%;
+    height: 25%;
     padding: 0 15px;
-    display: flex; /* 让文字垂直居中 */
-    align-items: center;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
-
 .card-title {
-    font-size: 0.95rem; /* 小巧精致 */
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* 超出显示省略号 */
-    max-width: 70%;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
 }
 .card-date {
     font-size: 0.75rem;
@@ -137,62 +142,64 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* =========================================
-   3. 导航按钮 (液态玻璃 + 中文)
+   3. 导航：真·液态玻璃 (Liquid Glass)
    ========================================= */
 .nav-fixed {
     position: fixed;
     top: 20px;
-    left: 0; width: 100%; padding: 0 20px;
-    z-index: 100;
+    left: 0; width: 100%; padding: 0 24px;
+    z-index: 200; /* 最高层级 */
     display: flex;
     justify-content: space-between;
     pointer-events: none;
 }
 .glass-btn {
     pointer-events: auto;
-    background: var(--glass-bg);
-    backdrop-filter: blur(30px); /* 强模糊 */
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid var(--glass-border);
+    background: var(--glass-bg); /* 极低透明度 */
+    backdrop-filter: var(--glass-blur); /* 50px 强模糊 */
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); /* 只有边框显眼 */
     color: var(--text-primary);
-    padding: 8px 20px;
+    padding: 0 20px;
+    height: 44px;
     border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: all 0.2s;
 }
-.btn-theme { width: 40px; height: 40px; padding: 0; display:flex; align-items:center; justify-content:center; border-radius: 50%; }
+.glass-btn:hover { background: rgba(128,128,128, 0.1); transform: scale(1.02); }
+.btn-theme { width: 44px; padding: 0; border-radius: 50%; }
 
 /* =========================================
-   4. 代码块 & Markdown 强制修复
+   4. Markdown & 代码块修复
    ========================================= */
 .markdown-body {
-    padding-top: 100px; /* 文章页顶部避开按钮 */
     font-size: 1.05rem;
     line-height: 1.7;
+    padding-bottom: 50px;
 }
 
-/* 代码块外层容器 */
+/* 强制代码块样式 */
 .markdown-body pre {
-    background-color: #282c34 !important; /* 强制深色背景 */
-    color: #abb2bf !important;           /* 强制浅色文字 */
-    border-radius: 12px;
+    background-color: var(--code-bg) !important;
+    color: #abb2bf !important;
     padding: 15px;
+    border-radius: 12px;
     overflow-x: auto;
     margin: 20px 0;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(128,128,128, 0.1);
 }
-
-/* 代码文字 */
 .markdown-body code {
     font-family: "SF Mono", Consolas, monospace;
     font-size: 0.9em;
 }
-
-/* 行内代码 */
 .markdown-body p code {
-    background: rgba(128,128,128,0.2);
+    background: rgba(128,128,128, 0.15);
     color: var(--accent-color);
     padding: 2px 5px;
     border-radius: 4px;
@@ -200,26 +207,27 @@ a { text-decoration: none; color: inherit; }
 
 /* 图片 */
 .markdown-body img {
-    border-radius: 12px;
+    border-radius: 16px;
     max-width: 100%;
     margin: 20px 0;
 }
 
 /* 表格 */
 .markdown-body table {
-    display: block;
     width: 100%;
+    display: block;
     overflow-x: auto;
     border-collapse: collapse;
     margin: 20px 0;
 }
 .markdown-body th, .markdown-body td {
     padding: 10px 15px;
-    border-bottom: 1px solid rgba(128,128,128,0.2);
+    border-bottom: 1px solid rgba(128,128,128, 0.1);
 }
 
 /* 手机适配 */
 @media (max-width: 768px) {
-    .content-section { padding: 30px 8px; }
-    .post-card { height: 300px; } /* 手机上卡片稍微矮一点 */
+    .content-section { margin-top: -40px; } /* 手机上重叠少一点 */
+    .post-card { height: 280px; }
+    .glass-btn { padding: 0 16px; font-size: 0.85rem; }
 }

@@ -21,7 +21,8 @@
         <div class="wallpaper-section">
             <div class="wallpaper-content">
                 <h1>{{ site.title }}</h1>
-                <p>2025</p> </div>
+                <p id="current-date">Loading...</p>
+            </div>
             <div class="scroll-hint">↓</div>
         </div>
 
@@ -35,21 +36,21 @@
         </div>
 
     {% else %}
-        <main class="content-section" style="margin-top:0; min-height:100vh;">
+        <div class="content-section" style="margin-top:0; padding-top:100px; min-height:100vh;">
             <article class="container markdown-body">
                 {% if page.image %}
-                    <img src="{{ page.image }}" style="width:100%; height:250px; object-fit:cover; margin-top:0;">
+                    <img src="{{ page.image }}" style="width:100%; height:250px; object-fit:cover; object-position:top; margin-top:0;">
                 {% endif %}
 
                 <h1 style="margin-bottom:10px;">{{ page.title }}</h1>
-                <div style="color:#888; font-size:0.9rem; margin-bottom:30px;">
+                <div style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:30px;">
                     {{ page.date | date: "%Y-%m-%d" }}
                 </div>
 
                 {{ content }}
             </article>
-            <footer style="text-align:center; padding:50px; color:#888;">END</footer>
-        </main>
+            <footer style="text-align:center; padding:50px; color:var(--text-secondary);">END</footer>
+        </div>
     {% endif %}
 
     <script src="/assets/js/main.js"></script>
