@@ -11,7 +11,7 @@ title: Home
           {% if post.image %}
             <img src="{{ post.image }}" loading="lazy" alt="cover">
           {% else %}
-            <div style="width:100%; height:100%; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);"></div>
+            <div style="width:100%; height:100%; background: linear-gradient(to bottom right, #e0e0e0, #f5f5f7);"></div>
           {% endif %}
       </div>
 
@@ -19,7 +19,6 @@ title: Home
           <h3 class="card-title">{{ post.title }}</h3>
           <span class="card-date">{{ post.date | date: "%Y.%m.%d" }}</span>
       </div>
-
   </a>
   {% endfor %}
 </div>
