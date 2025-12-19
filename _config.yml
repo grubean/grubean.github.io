@@ -1,6 +1,6 @@
-title: Grubean's Blog
-description: Keep it Simple.
-theme: minima
+title: 姐姐的Blog
+description: 不管古今世事，永为天地闲人
+theme: jekyll-theme-architect
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
