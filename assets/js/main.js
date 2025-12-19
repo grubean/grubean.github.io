@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. 动态日期逻辑 (你要求的：显示当天日期)
+    // 1. 获取当天日期 (格式: 2025-12-19)
     const dateElement = document.getElementById('current-date');
     if (dateElement) {
         const now = new Date();
         const year = now.getFullYear();
+        // 月份+1，并补0
         const month = String(now.getMonth() + 1).padStart(2, '0');
+        // 日期补0
         const day = String(now.getDate()).padStart(2, '0');
+
         dateElement.textContent = `${year}-${month}-${day}`;
     }
 
