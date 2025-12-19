@@ -1,48 +1,59 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light"> <head>
+<html lang="zh-CN" data-theme="light">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>{{ page.title | escape }} - {{ site.title | escape }}</title>
+    <title>{{ page.title | escape }}</title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
-    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+    <button id="theme-toggle" class="theme-toggle-btn">
         <span>☀️</span>
     </button>
 
     {% if page.url == "/" %}
-
-        <div class="hero-fixed-layer">
-            <div class="hero-title">
+        <section class="lock-screen">
+            <div class="lock-content">
                 <h1>{{ site.title }}</h1>
                 <p>{{ site.description }}</p>
             </div>
-            <div class="scroll-hint">向上滑动以解锁</div>
-        </div>
+            <div class="swipe-up-hint">
+                Swipe up to unlock
+                <br>↑
+            </div>
+        </section>
 
-        <div class="content-layer-glass">
-            <main class="container">
-                {{ content }}
-            </main>
-            <footer style="text-align: center; margin-top: 80px; color: var(--text-color-secondary); font-size: 0.8rem;">
-               © {{ site.time | date: "%Y" }} Grubean. Designed by Apple Style.
+        <main class="home-screen">
+            {{ content }}
+
+            <footer style="text-align: center; margin-top: 60px; color: var(--text-secondary); font-size: 0.8rem;">
+                &copy; {{ site.time | date: "%Y" }} Grubean.
             </footer>
-        </div>
+        </main>
 
     {% else %}
-        <div class="page-header">
-             <a href="/" style="font-weight: 600; color: var(--accent-color);">← 返回首页</a>
+        <div class="nav-pill-container">
+            <a href="/" class="nav-pill">
+                <span>←</span> Home
+            </a>
         </div>
-        <main class="container markdown-body">
-            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">{{ page.title }}</h1>
-             {% if page.image %}
-            <img src="{{ page.image }}" style="width:100%; height: 300px; object-fit:cover; margin-bottom: 30px; border-radius: 16px;">
+
+        <main class="markdown-body">
+            {% if page.image %}
+            <img src="{{ page.image }}" style="width:100%; height: 350px; object-fit: cover; margin-top: 0;">
             {% endif %}
+
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px; line-height: 1.2;">{{ page.title }}</h1>
+            <div style="color: var(--text-secondary); margin-bottom: 40px; font-size: 0.9rem;">
+                {{ page.date | date: "%Y年%m月%d日" }}
+            </div>
+
             {{ content }}
         </main>
-        <footer style="text-align: center; padding: 40px; color: var(--text-color-secondary);">
-            <a href="/">Home</a>
+
+        <footer style="text-align: center; padding: 50px 0; color: var(--text-secondary); font-size: 0.8rem;">
+            Thanks for reading.
         </footer>
     {% endif %}
 

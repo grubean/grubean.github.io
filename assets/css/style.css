@@ -1,200 +1,215 @@
 :root {
-    /* --- 苹果风浅色模式变量 --- */
-    --bg-color: #fbfbfd;
-    --text-color-primary: #1d1d1f;
-    --text-color-secondary: #86868b;
-    --card-bg: rgba(255, 255, 255, 0.8); /* 半透明白 */
-    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    --accent-color: #0071e3; /* Apple Blue */
-    --glass-border: 1px solid rgba(255, 255, 255, 0.3);
-    --hero-overlay: rgba(0,0,0,0.2); /* 壁纸上的遮罩层，保证文字清晰 */
+    /* --- 亮色模式 --- */
+    --bg-color: #f5f5f7;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --card-bg: #ffffff;
+    --accent-color: #0071e3;
+    --border-color: #d2d2d7;
+    --nav-glass: rgba(255, 255, 255, 0.7);
 }
 
 [data-theme="dark"] {
-    /* --- 苹果风深色模式变量 --- */
-    --bg-color: #000000; /* 纯黑背景，配合OLED屏幕 */
-    --text-color-primary: #f5f5f7;
-    --text-color-secondary: #a1a1a6;
-    --card-bg: rgba(28, 28, 30, 0.8); /* 半透明深灰 */
-    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    /* --- 深色模式 (高级深灰，非纯黑) --- */
+    --bg-color: #1c1c1e; /* 类似 iPhone 设置界面的深色 */
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --card-bg: #2c2c2e; /* 比背景稍浅一点的灰色，体现层级 */
     --accent-color: #2997ff;
-    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    --hero-overlay: rgba(0,0,0,0.6); /* 深色模式加深遮罩 */
+    --border-color: #38383a;
+    --nav-glass: rgba(28, 28, 30, 0.7);
 }
 
-/* 全局重置 */
+/* 全局设置 */
 body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-    background-color: var(--bg-color); /* 兜底背景色 */
-    color: var(--text-color-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
     transition: background-color 0.3s, color 0.3s;
-    overflow-x: hidden;
+    overflow-x: hidden; /* 防止左右晃动 */
 }
 
-a { text-decoration: none; color: inherit; }
+a { text-decoration: none; color: inherit; transition: opacity 0.2s; }
+a:hover { opacity: 0.7; }
 
-/* --- 1. 底层：Bing 壁纸 (Hero Layer) --- */
-.hero-fixed-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* =========================================
+   1. 锁屏层 (Lock Screen) - 像盖子一样盖在最上面
+   ========================================= */
+.lock-screen {
+    position: relative; /* 相对定位，随页面滚动 */
     width: 100%;
-    height: 100vh;
-    /* 使用第三方代理获取 Bing 每日高清壁纸 (如果失效请告诉我更换) */
+    height: 100vh; /* 占满全屏 */
     background-image: url('https://bing.biturl.top/?resolution=1920&format=image');
     background-size: cover;
     background-position: center;
-    z-index: -1; /* 放在最底层 */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-}
-
-/* 壁纸上的遮罩，用于让文字和深色模式更清晰 */
-.hero-fixed-layer::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: var(--hero-overlay);
-    transition: background 0.3s;
-}
-
-.hero-title {
-    z-index: 1;
     color: white;
-    text-align: center;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* 锁屏层底部的阴影，增加立体感 */
 }
-.hero-title h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px;}
-.hero-title p { font-size: 1.2rem; font-weight: 300; opacity: 0.9; }
 
-/* 向上滑动的提示动画 */
-.scroll-hint {
+/* 锁屏上的文字 */
+.lock-content {
+    text-align: center;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.lock-content h1 { font-size: 4rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
+.lock-content p { font-size: 1.4rem; font-weight: 400; opacity: 0.9; margin-top: 10px;}
+
+/* 向上滑动的箭头 */
+.swipe-up-hint {
     position: absolute;
-    bottom: 120px; /* 提高位置，留出空间给即将上滑的内容 */
-    z-index: 1;
-    color: rgba(255,255,255,0.7);
-    animation: floatUp 2s infinite;
-    font-size: 0.9rem;
+    bottom: 50px;
+    font-size: 14px;
+    opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 2px;
+    animation: bounce 2s infinite;
 }
-@keyframes floatUp {
-    0%, 100% { transform: translateY(0); opacity: 0.7; }
-    50% { transform: translateY(-10px); opacity: 1; }
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-10px);}
+    60% {transform: translateY(-5px);}
 }
 
-
-/* --- 2. 上层：磨砂玻璃内容层 (Content Layer) --- */
-.content-layer-glass {
-    /* 核心：初始状态在屏幕下方，视觉上“解锁” */
-    margin-top: 85vh;
+/* =========================================
+   2. 主屏幕/文章列表 (Home Screen) - 藏在下面
+   ========================================= */
+.home-screen {
     min-height: 100vh;
-    background: var(--card-bg); /* 使用半透明背景变量 */
-    backdrop-filter: blur(20px) saturate(180%); /* 核心：苹果风磨砂玻璃效果 */
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 30px 30px 0 0; /* 顶部大圆角 */
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
     padding: 60px 20px;
-    position: relative;
-    z-index: 10;
-    border-top: var(--glass-border);
-    transition: background 0.3s, border 0.3s;
-}
-
-.container {
     max-width: 800px;
     margin: 0 auto;
 }
 
-/* --- 3. 暗黑模式切换按钮 (Dark Mode Toggle) --- */
+/* 卡片样式优化 */
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+}
+.post-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+.post-card:hover { transform: scale(1.02); }
+
+/* =========================================
+   3. Markdown 内容深度优化 (High-End Style)
+   ========================================= */
+.markdown-body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+/* 图片圆角 */
+.markdown-body img {
+    border-radius: 16px; /* 苹果风圆角 */
+    max-width: 100%;
+    margin: 30px 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* 图片阴影 */
+}
+
+/* 表格优化 */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse; /* 合并边框 */
+    margin: 30px 0;
+    font-size: 0.95rem;
+    overflow: hidden;
+    border-radius: 12px; /* 表格整体圆角 */
+    border-style: hidden; /* 隐藏外边框冲突 */
+    box-shadow: 0 0 0 1px var(--border-color); /* 用阴影模拟细边框 */
+}
+.markdown-body th {
+    background: var(--card-bg);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+}
+.markdown-body td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+.markdown-body tr:last-child td { border-bottom: none; }
+
+/* 引用块 */
+.markdown-body blockquote {
+    border-left: 4px solid var(--accent-color);
+    margin: 30px 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+    font-style: italic;
+    background: transparent;
+}
+
+/* 代码块 */
+.markdown-body pre {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+/* =========================================
+   4. UI 组件 (按钮、导航)
+   ========================================= */
+/* 苹果风胶囊返回按钮 */
+.nav-pill-container {
+    position: fixed; /* 固定在左上角，跟随滚动 */
+    top: 20px;
+    left: 20px;
+    z-index: 200;
+}
+
+.nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--nav-glass); /* 磨砂玻璃背景 */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 10px 20px;
+    border-radius: 99px; /* 胶囊形状 */
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 0.5px solid rgba(128,128,128, 0.2);
+    transition: transform 0.2s;
+}
+.nav-pill:hover { transform: scale(1.05); }
+
+/* 右上角主题切换按钮 */
 .theme-toggle-btn {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 100;
-    background: rgba(128, 128, 128, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    z-index: 200;
     width: 44px;
     height: 44px;
     border-radius: 50%;
+    background: var(--nav-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(128,128,128, 0.2);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     cursor: pointer;
     font-size: 1.2rem;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.theme-toggle-btn:hover { background: rgba(128, 128, 128, 0.5); }
-
-
-/* --- 4. 卡片式文章列表 (Card Grid) --- */
-.post-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 响应式网格 */
-    gap: 30px;
-    padding: 20px 0;
-}
-
-.post-card {
-    background: var(--bg-color); /* 卡片自身不透明，突出于磨砂背景 */
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-    border: var(--glass-border);
-}
-
-.post-card:hover {
-    transform: translateY(-8px) scale(1.02); /* 悬浮时更有弹性的上浮效果 */
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-}
-
-.post-card-image-container {
-    height: 200px;
-    overflow: hidden;
-    background: #eee;
-    position: relative;
-}
-
-.post-card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-.post-card:hover .post-card-image {
-    transform: scale(1.05); /* 图片轻微放大 */
-}
-
-.post-card-content {
-    padding: 24px;
-}
-
-.post-card-meta {
-    font-size: 0.8rem;
-    color: var(--text-color-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.post-card-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin: 0;
-    line-height: 1.3;
-    color: var(--text-color-primary);
-}
-
-/* 文章页面的简单适配 */
-.page-header { padding: 30px; text-align: center; background: var(--bg-color);}
-.markdown-body { padding: 40px 20px; max-width: 720px; margin: 0 auto; }
-.markdown-body img { border-radius: 12px; max-width: 100%; box-shadow: var(--card-shadow);}
