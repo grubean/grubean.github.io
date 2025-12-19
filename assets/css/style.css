@@ -16,7 +16,7 @@ a:hover { opacity: 0.7; }
 .hero {
     height: 100vh; /* 占满全屏高度 */
     width: 100%;
-    background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=2670&auto=format&fit=crop'); /* 默认壁纸，随后你可以换 */
+    background-image: url('https://uapis.cn/static/uploads/9b354213bd_FcbaHiLQ1wja.webp'); /* 默认壁纸，随后你可以换 */
     background-size: cover;
     background-position: center;
     display: flex;

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: default
 title:  "我的第一篇极简博客"
 date:   2025-12-18 12:00:00 +0800
 categories: [随笔]
