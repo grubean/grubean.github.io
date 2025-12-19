@@ -16,4 +16,4 @@ image: https://uapis.cn/static/uploads/9b354213bd_FcbaHiLQ1wja.webp
 * 提交就发布
 * 真的很简单
 
-<img src="https://uapis.cn/static/uploads/9b229d1833_sn0fcNgNSz8D.webp" style="zoom: 40%;" >
+<img src="https://uapis.cn/static/uploads/9b2c19d639_PexOfgDOTKhq.webp" style="zoom: 40%;" >

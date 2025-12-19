@@ -2,10 +2,12 @@
 layout: post
 title:  "Markdown 语法渲染测试"
 date:   2025-12-15 09:00:00 +0800
-image: https://images.unsplash.com/photo-1498050108023-c5249f4df085
+image: https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEM2alpQqGJIz7OKzxgQZh6mWJlOBuzTwACRzoAAljPEVZjQytWhpq5DTYE.png
 ---
 
 这是一篇用来测试 **Grubean Blog** 样式的文章。你应该能看到非常圆润的图片圆角和类似 iOS 的排版。
+
+公式： $xyz$ 
 
 ## 1. 图片样式测试
 下面应该是一张大图，圆角应该很大（24px），并且有阴影。
