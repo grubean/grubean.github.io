@@ -1,36 +1,51 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="zh-CN" data-theme="light"> <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ page.title | escape }} - {{ site.title | escape }}</title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+        <span>☀️</span>
+    </button>
+
     {% if page.url == "/" %}
-    <header class="hero">
-        <div>
-            <h1>{{ site.title }}</h1>
-            <p>{{ site.description }}</p>
+
+        <div class="hero-fixed-layer">
+            <div class="hero-title">
+                <h1>{{ site.title }}</h1>
+                <p>{{ site.description }}</p>
+            </div>
+            <div class="scroll-hint">向上滑动以解锁</div>
         </div>
-        <div class="scroll-down">↓</div>
-    </header>
+
+        <div class="content-layer-glass">
+            <main class="container">
+                {{ content }}
+            </main>
+            <footer style="text-align: center; margin-top: 80px; color: var(--text-color-secondary); font-size: 0.8rem;">
+               © {{ site.time | date: "%Y" }} Grubean. Designed by Apple Style.
+            </footer>
+        </div>
+
     {% else %}
-    <div style="padding: 20px; text-align: center; background: #fff;">
-        <a href="/" style="font-weight: bold; font-size: 1.2rem;">← Back to Home</a>
-    </div>
+        <div class="page-header">
+             <a href="/" style="font-weight: 600; color: var(--accent-color);">← 返回首页</a>
+        </div>
+        <main class="container markdown-body">
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">{{ page.title }}</h1>
+             {% if page.image %}
+            <img src="{{ page.image }}" style="width:100%; height: 300px; object-fit:cover; margin-bottom: 30px; border-radius: 16px;">
+            {% endif %}
+            {{ content }}
+        </main>
+        <footer style="text-align: center; padding: 40px; color: var(--text-color-secondary);">
+            <a href="/">Home</a>
+        </footer>
     {% endif %}
 
-    <main class="container">
-        <div class="markdown-body">
-            {{ content }}
-        </div>
-
-        <footer style="text-align: center; margin-top: 80px; color: #888; font-size: 0.8rem;">
-            &copy; {{ site.time | date: "%Y" }} {{ site.title }}
-        </footer>
-    </main>
-
+    <script src="/assets/js/main.js"></script>
 </body>
 </html>
