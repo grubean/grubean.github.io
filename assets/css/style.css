@@ -17,9 +17,16 @@
     --token-number: #005cc5;     /* 蓝色: 123 */
 
     /* --- 玻璃效果 --- */
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --glass-blur: blur(10px);
+    /* --- 升级版：液态玻璃变量 --- */
+    /* 背景不是纯白，而是带一点点渐变的透 */
+    --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15));
+    /* 边框要亮，才有玻璃边缘反光的感觉 */
+    --glass-border: rgba(255, 255, 255, 0.1);
+    /* 阴影：内部高光 + 外部柔光 */
+    --glass-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.05),     /* 外部投影 */
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 内部微弱描边 */
+    --glass-blur: blur(6px) saturate(150%); /* 增加 saturate 让背后的色彩更鲜艳 */
 }
 
 [data-theme="dark"] {
@@ -40,9 +47,12 @@
     --token-function: #d2a8ff;   /* 浅紫 */
     --token-number: #79c0ff;     /* 亮蓝 */
 
-    /* --- 玻璃效果 --- */
-    --glass-bg: rgba(40, 40, 40, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.15);
+    /* 暗黑模式下的液态玻璃 */
+    --glass-bg: linear-gradient(135deg, rgba(40, 40, 40, 0.2), rgba(40, 40, 40, 0.2));
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -126,24 +136,73 @@ a { text-decoration: none; color: inherit; }
 .card-date { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; }
 
 /* =========================================
-   3. 导航按钮
+   3. 导航按钮 (液态水晶版)
    ========================================= */
 .nav-fixed {
     position: fixed; top: 20px; left: 0; width: 100%; padding: 0 24px;
     z-index: 999; display: flex; justify-content: space-between; pointer-events: none;
 }
+
+/* 强制统一 a标签 和 button标签 的基础行为 */
 .glass-btn {
     pointer-events: auto;
+
+    /* 核心玻璃质感 */
     background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border); color: var(--text-primary);
-    padding: 0 20px; height: 44px; border-radius: 50px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; font-weight: 600; cursor: pointer;
-    box-shadow: 0 8px 8px rgba(0,0,0,0.1); transition: all 0.9s;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+
+    color: var(--text-primary);
+
+    /* 强制统一尺寸和排版 */
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 50px; /* 胶囊圆角 */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    /* 消除浏览器默认差异 */
+    box-sizing: border-box;
+    line-height: 1;
+    text-decoration: none;
+    appearance: none; /* 移除 iOS 默认按钮样式 */
+
+    /* 动画 */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s;
 }
-.glass-btn:hover { transform: scale(1.02); background: var(--card-bg); }
-.btn-theme { width: 44px; padding: 0; border-radius: 50%; }
+
+/* 悬停状态：更亮、上浮，但【绝对不要】变成不透明实色 */
+.glass-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    /* 悬停时，稍微增加一点白色覆盖，模拟反光增强，但保持透明 */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.5);
+}
+
+/* 点击按压状态：下沉 */
+.glass-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* 只有右边的圆钮需要这个特殊类 */
+.btn-theme {
+    width: 44px;
+    padding: 0;
+    border-radius: 50%; /* 正圆形 */
+}
+
+/* 暗黑模式下 Hover 微调 */
+[data-theme="dark"] .glass-btn:hover {
+    background: linear-gradient(135deg, rgba(60, 60, 60, 0.7), rgba(60, 60, 60, 0.3));
+}
 
 /* =========================================
    4. 文章详情页排版
