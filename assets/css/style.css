@@ -1,37 +1,54 @@
 :root {
-    /* 基础颜色 - 带透明度以便透出壁纸 */
-    --bg-color: rgba(242, 242, 247, 0.85);
-    --card-bg: rgba(255, 255, 255, 0.95); /* 卡片不透明度高一点，防止内容看不清 */
+    /* --- 基础配色 --- */
+    --bg-color: rgba(242, 242, 247, 0.9);
+    --card-bg: rgba(255, 255, 255, 0.95);
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
-    --accent-color: #9000ff;
+    --accent-color: #007aff;
 
-    /* 玻璃拟态变量 */
-    --glass-bg: rgba(255, 255, 255, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.5);
+    /* --- 代码块配色 (亮色模式) --- */
+    --code-bg: #f6f8fa; /* GitHub 浅灰背景 */
+    --code-text: #24292e;
+    /* 语法高亮颜色 (亮色) */
+    --token-keyword: #d73a49;    /* 红色: import, function */
+    --token-string: #032f62;     /* 深蓝: "string" */
+    --token-comment: #6a737d;    /* 灰色: // comment */
+    --token-function: #6f42c1;   /* 紫色: myFunc() */
+    --token-number: #005cc5;     /* 蓝色: 123 */
+
+    /* --- 玻璃效果 --- */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.6);
     --glass-blur: blur(20px);
-
-    --code-bg: #282c34;
 }
 
 [data-theme="dark"] {
-    --bg-color: rgba(28, 28, 30, 0.85);
+    /* --- 基础配色 --- */
+    --bg-color: rgba(28, 28, 30, 0.9);
     --card-bg: rgba(44, 44, 46, 0.95);
     --text-primary: #f5f5f7;
     --text-secondary: #a1a1a6;
-    --accent-color: #ba0aff;
+    --accent-color: #0a84ff;
 
-    --glass-bg: rgba(40, 40, 40, 0.5);
+    /* --- 代码块配色 (暗色模式) --- */
+    --code-bg: #1c1c1e; /* 苹果深空灰 */
+    --code-text: #c9d1d9;
+    /* 语法高亮颜色 (暗色) */
+    --token-keyword: #ff7b72;    /* 浅红 */
+    --token-string: #a5d6ff;     /* 浅蓝 */
+    --token-comment: #8b949e;    /* 灰 */
+    --token-function: #d2a8ff;   /* 浅紫 */
+    --token-number: #79c0ff;     /* 亮蓝 */
+
+    /* --- 玻璃效果 --- */
+    --glass-bg: rgba(40, 40, 40, 0.6);
     --glass-border: rgba(255, 255, 255, 0.15);
-
-    --code-bg: #000000;
 }
 
 body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    background-color: var(--bg-color); /* 这里的背景色会在没壁纸的地方显示 */
+    background-color: var(--bg-color);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
 }
@@ -39,320 +56,184 @@ a { text-decoration: none; color: inherit; }
 * { box-sizing: border-box; }
 
 /* =========================================
-   1. 核心布局：视差锁屏效果
+   1. 布局：视差锁屏
    ========================================= */
-
-/* 壁纸层：固定在背后，Z轴为0 */
 .wallpaper-section {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    height: 100vh;
-    width: 100%;
+    position: fixed; top: 0; left: 0; z-index: 0;
+    height: 100vh; width: 100%;
     background-image: url('https://bing.biturl.top/?resolution=1920&format=image');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background-size: cover; background-position: center;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
-
-/* 壁纸上的文字 */
 .wallpaper-content { text-align: center; color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 .wallpaper-content h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
 .wallpaper-content p {
-    font-size: 1.2rem;
-    margin-top: 10px;
-    font-weight: 500;
-    background: rgba(0,0,0,0.2);
-    padding: 5px 15px;
-    border-radius: 20px;
-    display: inline-block;
+    font-size: 1.2rem; margin-top: 10px; font-weight: 500;
+    background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 20px; display: inline-block;
 }
 .scroll-hint {
-    position: absolute;
-    bottom: 50px;
-    color: rgba(255,255,255,0.8);
+    position: absolute; bottom: 50px; color: rgba(255,255,255,0.8);
     animation: bounce 2s infinite;
 }
 @keyframes bounce { 0%,100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
 
-/* 内容层：盖在壁纸上面，Z轴为1 */
 .content-section {
-    position: relative;
-    z-index: 1;
+    position: relative; z-index: 1;
     background: var(--bg-color);
-    min-height: 100vh;
-    padding: 60px 20px;
-
-    /* 磨砂玻璃背景，让底下的壁纸透出来一点点 */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    min-height: 100vh; padding: 60px 20px;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     transition: background 0.3s;
 }
 
-/* 【关键】只在主页生效：把内容层推到屏幕下方，形成抽屉效果 */
+/* 抽屉效果 */
 .wallpaper-section ~ .content-section {
     margin-top: 100vh;
-    border-radius: 40px 40px 0 0; /* 顶部圆角 */
+    border-radius: 40px 40px 0 0;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
     border-top: 1px solid var(--glass-border);
 }
 
 /* =========================================
-   2. 卡片与列表 (高图比、紧凑型)
+   2. 卡片与列表
    ========================================= */
 .container { max-width: 1000px; margin: 0 auto; }
 
-.post-grid {
-    display: grid;
-    gap: 20px; /* 间距稍微调小一点，更紧凑 */
-    grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-    .post-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
+.post-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .post-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .post-card {
     background: var(--card-bg);
-    border-radius: 12px; /* 圆角稍微改小一点点，显得更利落 */
-    overflow: hidden;
-    height: 260px; /* 【修改】总高度减小：320px -> 260px */
-    display: flex;
-    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden; height: 260px;
+    display: flex; flex-direction: column;
     box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     transition: transform 0.2s;
     border: 1px solid rgba(128,128,128, 0.05);
 }
 .post-card:hover { transform: translateY(-3px); }
 
-/* 图片盒子：大幅增加占比 */
-.card-img-box {
-    height: 200px; /* 【修改】图片高度增加，占比约 77% */
-    width: 100%;
-    flex-shrink: 0;
-    background: #e5e5e5;
-}
+.card-img-box { height: 200px; width: 100%; flex-shrink: 0; background: #e5e5e5; }
+.card-img-box img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
-.card-img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center; /* 改为居中，通用性更好 */
-}
-
-/* 文字区：极简模式 */
 .card-body {
-    flex-grow: 1;
-    padding: 10px 12px; /* 【修改】减小内边距 */
-    display: flex;
-    flex-direction: row; /* 【修改】改为横向排列：左边标题，右边日期 */
-    justify-content: space-between; /* 两端对齐 */
-    align-items: center;
+    flex-grow: 1; padding: 10px 12px;
+    display: flex; flex-direction: row; justify-content: space-between; align-items: center;
 }
-
 .card-title {
-    font-size: 0.95rem; /* 字体稍微改小一点，适配窄空间 */
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-
-    /* 单行显示，超出省略，保持整洁 */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 70%; /* 留点位置给日期 */
+    font-size: 0.95rem; font-weight: 600; color: var(--text-primary);
+    margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;
 }
-
-.card-date {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
+.card-date { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; }
 
 /* =========================================
-   3. 导航按钮 (Button 样式回归)
+   3. 导航按钮
    ========================================= */
 .nav-fixed {
-    position: fixed;
-    top: 20px;
-    left: 0; width: 100%; padding: 0 24px;
-    z-index: 999; /* 保证在所有层之上 */
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
+    position: fixed; top: 20px; left: 0; width: 100%; padding: 0 24px;
+    z-index: 999; display: flex; justify-content: space-between; pointer-events: none;
 }
 .glass-btn {
     pointer-events: auto;
     background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
-    padding: 0 20px;
-    height: 44px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 8px 6px rgba(0,0,0,0.1);
-    transition: all 0.9s;
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); color: var(--text-primary);
+    padding: 0 20px; height: 44px; border-radius: 50px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    box-shadow: 0 8px 8px rgba(0,0,0,0.1); transition: all 0.9s;
 }
 .glass-btn:hover { transform: scale(1.02); background: var(--card-bg); }
 .btn-theme { width: 44px; padding: 0; border-radius: 50%; }
 
 /* =========================================
-   4. 文章详情页排版 (Markdown 深度优化版)
+   4. 文章详情页排版
    ========================================= */
 .markdown-body {
-    font-size: 1.1rem; /* 稍微大一点，阅读更舒服 */
-    line-height: 1.8;
-    padding-bottom: 80px;
-    color: var(--text-primary);
-    word-wrap: break-word; /* 防止长单词撑破布局 */
+    font-size: 1.1rem; line-height: 1.8; padding-bottom: 80px;
+    color: var(--text-primary); word-wrap: break-word;
 }
-
-/* --- 标题 --- */
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4 {
-    margin-top: 2em;
-    margin-bottom: 0.8em;
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--text-primary);
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    margin-top: 2em; margin-bottom: 0.8em; font-weight: 700; color: var(--text-primary);
 }
-.markdown-body h1 { font-size: 2em; border-bottom: 1px solid rgba(128,128,128, 0.1); padding-bottom: 10px; }
-.markdown-body h2 { font-size: 1.6em; }
-.markdown-body h3 { font-size: 1.3em; }
+.markdown-body h1 { font-size: 2em; border-bottom: 1px solid rgba(128,128,128,0.1); padding-bottom: 10px; }
 
-/* --- 段落与列表 --- */
-.markdown-body p { margin-bottom: 1.5em; }
-
-.markdown-body ul,
-.markdown-body ol {
-    padding-left: 2em;
-    margin-bottom: 1.5em;
-}
-.markdown-body li { margin-bottom: 0.5em; }
-
-/* --- 链接 --- */
+/* 链接 */
 .markdown-body a {
+    color: var(--accent-color); border-bottom: 1px dashed var(--accent-color); transition: 0.2s;
+}
+.markdown-body a:hover { border-bottom-style: solid; opacity: 0.8; }
+
+/* 列表 1.2.3. 高亮 */
+.markdown-body ol li::marker {
     color: var(--accent-color);
-    text-decoration: none;
-    border-bottom: 1px dashed var(--accent-color); /* 虚线下划线 */
-    transition: all 0.2s;
-}
-.markdown-body a:hover {
-    border-bottom-style: solid; /* 悬停变实线 */
-    opacity: 0.8;
-}
-
-/* --- 代码块 (Code Block) --- */
-/* 修复：强制给 pre 加背景和样式 */
-.markdown-body pre {
-    background-color: #282c34 !important; /* 强制深色背景 */
-    color: #abb2bf !important;            /* 代码文字颜色 */
-    padding: 16px;
-    border-radius: 8px;
-    overflow-x: auto;                     /* 超长自动滚动 */
-    margin: 24px 0;
-    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-    font-size: 0.9em;
-    line-height: 1.5;
-    border: 1px solid rgba(0,0,0,0.1);    /* 微弱边框 */
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.2); /* 内部阴影，增加立体感 */
-}
-
-/* 针对 Jekyll 可能生成的 highlight 容器 wrapper */
-.markdown-body .highlight {
-    background-color: #282c34 !important;
-    border-radius: 8px;
-    margin: 24px 0;
-}
-
-/* --- 行内代码 (Inline Code) --- */
-/* 比如：文字中间的 `code` */
-.markdown-body p > code,
-.markdown-body li > code,
-.markdown-body table code {
-    background-color: rgba(128, 128, 128, 0.15); /* 淡淡的灰色背景 */
-    color: var(--accent-color);                  /* 使用主题色突出 */
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: "SF Mono", Consolas, monospace;
-    font-size: 0.9em;
-    margin: 0 2px;
-}
-
-/* --- 引用 (Blockquote) --- */
-.markdown-body blockquote {
-    margin: 24px 0;
-    padding: 16px 20px;
-    background: rgba(128, 128, 128, 0.05); /* 极淡的背景 */
-    border-left: 2px solid var(--accent-color); /* 左侧高亮竖线 */
-    color: var(--text-secondary);
+    font-weight: bold;
     font-style: italic;
-    border-radius: 0 8px 8px 0;
 }
-.markdown-body blockquote p:last-child { margin-bottom: 0; }
-
-/* --- 表格 (Table) --- */
-.markdown-body table {
-    width: 100%;
-    border-collapse: collapse; /* 边框合并 */
-    margin: 24px 0;
-    display: block;            /* 响应式表格关键 */
-    overflow-x: auto;          /* 手机端可左右滑动 */
-    border: 1px solid rgba(128,128,128, 0.2); /* 外框 */
-    border-radius: 8px;
+.markdown-body ul li::marker {
+    color: var(--text-secondary);
 }
 
-.markdown-body th,
-.markdown-body td {
-    padding: 12px 16px;
-    border: 1px solid rgba(128,128,128, 0.2); /* 单元格边框 */
-}
-
-.markdown-body th {
-    background-color: rgba(128,128,128, 0.1); /* 表头背景色 */
-    font-weight: 700;
-    text-align: left;
-}
-
-/* 斑马纹：隔行变色，阅读更清晰 */
-.markdown-body tr:nth-child(even) {
-    background-color: rgba(128,128,128, 0.03);
-}
-
-/* --- 图片 --- */
+/* 图片：增加圆角 */
 .markdown-body img {
-    display: block;
-    margin: 30px auto; /* 居中 */
-    max-width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* 图片加一点悬浮阴影 */
+    display: block; margin: 30px auto; max-width: 100%;
+    border-radius: 24px; /* 【修改】圆角增大 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* --- 分割线 (HR) --- */
-.markdown-body hr {
-    height: 1px;
-    border: none;
-    background: rgba(128,128,128, 0.3);
-    margin: 40px 0;
+/* 表格：自适应宽度 */
+.markdown-body table {
+    display: block; /* 允许滚动 */
+    width: max-content; /* 【修改】宽度自适应，内容多少就多宽 */
+    max-width: 100%;    /* 不超过屏幕 */
+    overflow-x: auto;
+    border-collapse: collapse; margin: 24px 0;
+    border: 1px solid rgba(128,128,128, 0.2); border-radius: 12px;
+}
+.markdown-body th, .markdown-body td {
+    padding: 12px 20px; border: 1px solid rgba(128,128,128, 0.15); white-space: nowrap; /* 不换行，保持表格整齐 */
+}
+.markdown-body th { background-color: rgba(128,128,128, 0.08); font-weight: 700; }
+
+/* =========================================
+   5. 代码块与语法高亮 (Highlighting)
+   ========================================= */
+.markdown-body pre {
+    position: relative; /* 为复制按钮定位 */
+    background-color: var(--code-bg) !important; /* 自适应背景 */
+    color: var(--code-text) !important;          /* 自适应文字 */
+    padding: 20px;
+    border-radius: 12px;
+    overflow-x: auto; margin: 24px 0;
+    font-family: "SF Mono", Consolas, monospace; font-size: 0.9em;
+    border: 1px solid rgba(128,128,128, 0.1);
 }
 
-/* 适配手机端字体大小 */
-@media (max-width: 768px) {
-    .wallpaper-content h1 { font-size: 2.8rem; }
-    .content-section { padding-top: 40px; }
+/* 复制按钮样式 */
+.copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(128,128,128, 0.15); border: none;
+    color: var(--text-secondary);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.75rem; cursor: pointer;
+    transition: all 0.2s; opacity: 0; /* 默认隐藏 */
 }
+.markdown-body pre:hover .copy-btn { opacity: 1; } /* 悬停显示 */
+.copy-btn:hover { background: var(--accent-color); color: white; }
+.copy-btn.copied { background: #34c759; color: white; }
+
+/* 行内代码 */
+.markdown-body p code {
+    background-color: var(--code-bg);
+    border: 1px solid rgba(128,128,128,0.1);
+    color: var(--accent-color);
+    padding: 2px 6px; border-radius: 6px;
+    font-family: "SF Mono", Consolas, monospace; font-size: 0.9em;
+}
+
+/* --- 语法高亮映射 (Jekyll Rouge 常用类名) --- */
+.highlight .c, .highlight .cm, .highlight .c1 { color: var(--token-comment); font-style: italic; } /* 注释 */
+.highlight .k, .highlight .kd, .highlight .kp, .highlight .kr { color: var(--token-keyword); font-weight: bold; } /* 关键字 */
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .se { color: var(--token-string); } /* 字符串 */
+.highlight .nf, .highlight .nb { color: var(--token-function); } /* 函数 */
+.highlight .m, .highlight .mi, .highlight .mf { color: var(--token-number); } /* 数字 */
+.highlight .nt, .highlight .nv { color: var(--token-keyword); } /* 变量/标签 */
