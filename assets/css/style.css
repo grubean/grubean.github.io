@@ -7,7 +7,7 @@
     --accent-color: #007aff;
 
     /* --- 代码块配色 (亮色模式) --- */
-    --code-bg: #f6f8fa; /* GitHub 浅灰背景 */
+    --code-bg: #f3f4f6; /* GitHub 浅灰背景 */
     --code-text: #24292e;
     /* 语法高亮颜色 (亮色) */
     --token-keyword: #d73a49;    /* 红色: import, function */
@@ -17,9 +17,9 @@
     --token-number: #005cc5;     /* 蓝色: 123 */
 
     /* --- 玻璃效果 --- */
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-blur: blur(20px);
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-blur: blur(10px);
 }
 
 [data-theme="dark"] {
@@ -41,7 +41,7 @@
     --token-number: #79c0ff;     /* 亮蓝 */
 
     /* --- 玻璃效果 --- */
-    --glass-bg: rgba(40, 40, 40, 0.6);
+    --glass-bg: rgba(40, 40, 40, 0.15);
     --glass-border: rgba(255, 255, 255, 0.15);
 }
 
