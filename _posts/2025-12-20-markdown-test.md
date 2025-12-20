@@ -2,7 +2,7 @@
 layout: post
 title:  "Markdown 语法渲染测试"
 date:   2025-12-15 09:00:00 +0800
-image: https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEM2alpQqGJIz7OKzxgQZh6mWJlOBuzTwACRzoAAljPEVZjQytWhpq5DTYE.png
+image: https://uapis.cn/static/uploads/9b398e4f95_Srs5W16z0jiH.webp
 ---
 
 这是一篇用来测试 **Grubean Blog** 样式的文章。你应该能看到非常圆润的图片圆角和类似 iOS 的排版。
@@ -12,11 +12,11 @@ image: https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEM2alpQqGJIz7OKzxgQZh
 ## 1. 图片样式测试
 下面应该是一张大图，圆角应该很大（24px），并且有阴影。
 
-![测试图片](https://images.unsplash.com/photo-1506744038136-46273834b3fb)
+<img src="https://uapis.cn/static/uploads/9b398e4f95_Srs5W16z0jiH.webp" style="zoom:25%;" />
 
 ## 2. 引用块测试
 > "Design is not just what it looks like and feels like. Design is how it works."
-> 
+> 生命是设计，而不是我们如何 appearance。
 > — Steve Jobs
 
 ## 3. 表格样式测试
@@ -34,3 +34,19 @@ image: https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEM2alpQqGJIz7OKzxgQZh
 def hello_grubean():
     print("Welcome to your new blog!")
     return "Keep it simple."
+ ```
+## 5. 链接样式测试
+[Grubean Blog](https://grubean.com)
+## 6. 脚注测试
+测试脚注[^1]。
+[^1]: 这是一个脚注。
+## 8.分割线测试
+ ---
+## 9. 列表样式测试
+1. 列表项1
+2. 列表项2
+
+## 10. 段落样式测试
+段落样式测试。
+
+<img src="https://uapis.cn/static/uploads/9b39972a11_clsjCFEBuVuN.webp" style="zoom: 25%;" />
