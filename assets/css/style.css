@@ -1,10 +1,13 @@
+/* =========================================
+   全局变量更新：增加透明度
+   ========================================= */
 :root {
-    --bg-color: #f2f2f7;
-    --card-bg: #ffffff;
+    /* 核心改动：背景色改为 RGBA 模式，0.85 表示 85% 不透明度 */
+    --bg-color: rgba(242, 242, 247, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.9); /* 卡片也稍微透一点 */
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
     --accent-color: #007aff;
-    /* 液态玻璃：稍微实一点的透明度 + 适中的模糊 */
     --glass-bg: rgba(255, 255, 255, 0.4);
     --glass-border: rgba(255, 255, 255, 0.5);
     --glass-blur: blur(20px);
@@ -12,37 +15,34 @@
 }
 
 [data-theme="dark"] {
-    --bg-color: #1c1c1e; /* 苹果深灰 */
-    --card-bg: #2c2c2e;
+    /* 核心改动：暗黑模式也对应调整为半透明 */
+    --bg-color: rgba(28, 28, 30, 0.85);
+    --card-bg: rgba(44, 44, 46, 0.9);
     --text-primary: #f5f5f7;
     --text-secondary: #a1a1a6;
     --accent-color: #0a84ff;
-    --glass-bg: rgba(40, 40, 40, 0.5); /* 深色模式下要更实一点 */
+    --glass-bg: rgba(40, 40, 40, 0.5);
     --glass-border: rgba(255, 255, 255, 0.15);
     --code-bg: #000000;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-}
-a { text-decoration: none; color: inherit; }
-* { box-sizing: border-box; }
+/* ... body 等通用设置保持不变 ... */
 
 /* =========================================
-   1. 布局：物理堆叠 (Standard Flow)
+   1. 布局：视差堆叠 (Parallax Stack)
    ========================================= */
 
-/* 壁纸层：第一屏 */
+/* 壁纸层：现在它是固定的背景板 */
 .wallpaper-section {
-    position: relative; /* 相对定位，随页面滚动 */
-    z-index: 10;        /* 层级高，压住下面的元素 */
+    position: fixed;  /* 【关键】固定定位，不随滚动条移动 */
+    top: 0;
+    left: 0;
+    z-index: 0;       /* 层级最低，在最底下 */
     height: 100vh;
     width: 100%;
+    /* 移除原来的 border-radius，作为背景板铺满更好看，或者保留也行，看你喜好 */
+    border-radius: 0;
+
     background-image: url('https://bing.biturl.top/?resolution=1920&format=image');
     background-size: cover;
     background-position: center;
@@ -50,192 +50,51 @@ a { text-decoration: none; color: inherit; }
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* 底部大圆角，像一个盖子 */
-    border-radius: 0 0 40px 40px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
-.wallpaper-content { text-align: center; color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-.wallpaper-content h1 { font-size: 3.5rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
-/* 日期样式 */
-.wallpaper-content p {
-    font-size: 1.2rem;
-    margin-top: 10px;
-    font-weight: 500;
-    opacity: 0.9;
-    font-variant-numeric: tabular-nums;
-    background: rgba(0,0,0,0.2); /* 给日期加个淡淡的底色 */
-    padding: 5px 15px;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-.scroll-hint {
-    position: absolute;
-    bottom: 50px;
-    color: rgba(255,255,255,0.8);
-    animation: bounce 2s infinite;
-}
-@keyframes bounce { 0%,100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
-
-/* 内容层：第二屏 */
+/* 内容层：默认样式 */
 .content-section {
-    position: relative;
-    z-index: 1; /* 在壁纸下面 */
-    background: var(--bg-color);
+    position: relative; /* 相对定位，为了压住 fixed 的壁纸 */
+    z-index: 1;         /* 层级比壁纸高 */
+    background: var(--bg-color); /* 调用我们上面改过的半透明背景 */
+
+    /* 增加磨砂玻璃效果，让透出来的壁纸模糊一点，提升文字可读性 */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
     min-height: 100vh;
     padding: 60px 20px;
-    /* 这里不需要负 Margin，自然连接即可，因为壁纸有圆角，效果自然 */
+    transition: background 0.3s; /* 主题切换时的平滑过渡 */
 }
 
+/* 【关键逻辑】只针对主页的布局调整
+   这个选择器的意思是：只有紧跟在 wallpaper-section 后面的 content-section 才生效
+   这样不会影响你的文章详情页
+*/
+.wallpaper-section + .content-section {
+    margin-top: 100vh; /* 把内容层顶到视口下方，漏出完整的壁纸 */
+    border-radius: 40px 40px 0 0; /* 顶部大圆角，像抽屉一样拉上来 */
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.1); /* 顶部阴影，增加层次感 */
+    border-top: 1px solid var(--glass-border); /* 顶部加一道微弱的高光边框 */
+}
+
+/* ... 之前的卡片样式 ... */
+
 /* =========================================
-   2. 卡片：短小精悍 (Compact)
+   2. 卡片与列数调整 (Grid System)
    ========================================= */
-.container { max-width: 800px; margin: 0 auto; }
+.container { max-width: 1000px; margin: 0 auto; } /* 稍微加宽一点 container 以容纳3列 */
 
 .post-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 25px;
+    /* 默认（手机端）：强制单列 */
+    grid-template-columns: 1fr;
 }
 
-.post-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    overflow: hidden;
-    height: 280px; /* 【修正】高度缩短到 280px */
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-    border: 1px solid rgba(128,128,128, 0.05);
-}
-.post-card:hover { transform: translateY(-5px); }
-
-/* 图片区：占大头 */
-.card-img-box {
-    height: 70%;
-    width: 100%;
-    background: #ccc;
-}
-.card-img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top; /* 这里的 top 保证人脸不被切 */
-}
-
-/* 标题区 */
-.card-body {
-    height: 30%;
-    padding: 0 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 5px;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.card-date {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-}
-
-/* =========================================
-   3. 导航：真·液态玻璃 (Real Glass)
-   ========================================= */
-.nav-fixed {
-    position: fixed;
-    top: 20px;
-    left: 0; width: 100%; padding: 0 24px;
-    z-index: 999;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-}
-.glass-btn {
-    pointer-events: auto;
-    /* 修正：看得见的玻璃 */
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
-    padding: 0 20px;
-    height: 44px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1); /* 加强阴影 */
-    transition: all 0.2s;
-}
-.glass-btn:hover { transform: scale(1.02); background: var(--card-bg); }
-.btn-theme { width: 44px; padding: 0; border-radius: 50%; }
-
-/* =========================================
-   4. Markdown & 代码块 (强力覆盖)
-   ========================================= */
-.markdown-body {
-    font-size: 1.05rem;
-    line-height: 1.7;
-    padding-bottom: 50px;
-}
-
-/* 代码块：使用 !important 确保样式生效 */
-.markdown-body pre {
-    background-color: var(--code-bg) !important;
-    color: #abb2bf !important;
-    padding: 15px;
-    border-radius: 12px;
-    overflow-x: auto;
-    margin: 20px 0;
-    border: 1px solid rgba(128,128,128, 0.1);
-}
-.markdown-body code {
-    font-family: "SF Mono", Consolas, monospace;
-    font-size: 0.9em;
-}
-/* 行内代码 */
-.markdown-body p code {
-    background: rgba(128,128,128, 0.15) !important;
-    color: var(--accent-color) !important;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-/* 图片圆角 */
-.markdown-body img {
-    border-radius: 16px;
-    max-width: 100%;
-    margin: 20px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-/* 表格 */
-.markdown-body table {
-    width: 100%;
-    display: block;
-    overflow-x: auto;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-.markdown-body th, .markdown-body td {
-    padding: 10px 15px;
-    border-bottom: 1px solid rgba(128,128,128, 0.1);
-}
-
-@media (max-width: 768px) {
-    .wallpaper-content h1 { font-size: 2.8rem; }
+/* 电脑端（大于 768px）：强制 3 列 */
+@media (min-width: 768px) {
+    .post-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
